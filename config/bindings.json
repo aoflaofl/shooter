@@ -1,0 +1,7 @@
+[
+  { "action": "MOVE", "type": "AXIS2", "axisX": 0, "axisY": 1, "deadzone": 0.2 },
+  { "action": "FIRE", "type": "BUTTON", "button": 0 },
+  { "action": "DASH", "type": "BUTTON", "button": 1 },
+  { "action": "UI_ACCEPT", "type": "BUTTON", "button": 0 },
+  { "action": "UI_BACK", "type": "BUTTON", "button": 1 }
+]

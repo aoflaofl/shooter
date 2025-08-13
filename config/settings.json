@@ -1,0 +1,4 @@
+{
+  "video": { "width": 1280, "height": 720, "vsync": true },
+  "audio": { "sfxVolume": 1.0 }
+}
