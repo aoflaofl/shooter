@@ -36,7 +36,7 @@ public class InputBindings {
   }
 
   private static List<Binding> defaultBindings() {
-    List<Binding> list = new ArrayList<>();
+    final List<Binding> list = new ArrayList<>();
 
     var move = new Binding();
     move.action = InputAction.MOVE;
