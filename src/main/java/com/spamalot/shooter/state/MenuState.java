@@ -1,6 +1,6 @@
 package com.spamalot.shooter.state;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 
 import com.spamalot.shooter.input.Gamepad;
 import com.spamalot.shooter.render.Renderer2D;
@@ -8,7 +8,7 @@ import com.spamalot.shooter.render.Renderer2D;
 public class MenuState implements GameState {
   private final long window;
   private final StateMachine sm;
-  private final Renderer2D r = new Renderer2D();
+  private final Renderer2D renderer = new Renderer2D();
 
   public MenuState(long window, StateMachine sm) {
     this.window = window;
@@ -28,14 +28,14 @@ public class MenuState implements GameState {
 
   @Override
   public void render() {
-    r.begin();
-    r.text(40, 60, "Shooter Demo");
-    r.text(40, 120, "Press A to Start");
-    r.end();
+    renderer.begin();
+    renderer.text(40, 60, "Shooter Demo");
+    renderer.text(40, 120, "Press A to Start");
+    renderer.end();
   }
 
   @Override
   public void dispose() {
-    r.dispose();
+    renderer.dispose();
   }
 }

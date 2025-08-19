@@ -1,18 +1,35 @@
 package com.spamalot.shooter.render;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glTexCoord2f;
+import static org.lwjgl.opengl.GL11.glVertex2f;
 
 public class Renderer2D {
-  private final int width = 1280;
-  private final int height = 720;
+  private static final int WIDTH = 1280;
+  private static final int HEIGHT = 720;
+  private BitmapFont font;
 
   public Renderer2D() {
-    GLUtils.create();
-    GLUtils.ortho(width, height);
+    OpenGlInitializer.create();
+    OpenGlInitializer.ortho(WIDTH, HEIGHT);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Load the bitmap font
+    font = new BitmapFont("assets/textures/font.png");
   }
 
   public void begin() {
@@ -44,13 +61,38 @@ public class Renderer2D {
     glEnable(GL_TEXTURE_2D);
   }
 
-  public void text(float x, float y, String s) {
+  public void textAA(float x, float y, String s) {
     rect(x, y, 300, 24); // placeholder
   }
 
+  public void text(float x, float y, String s) {
+    font.getTexture().bind();
+    glBegin(GL_QUADS);
+    float drawX = x;
+    float drawY = y;
+    for (char c : s.toCharArray()) {
+      float u = font.getCharU(c);
+      float v = font.getCharV(c);
+
+      glTexCoord2f(u, v);
+      glVertex2f(drawX, drawY);
+      glTexCoord2f(u + 1f / 16f, v);
+      glVertex2f(drawX + 8, drawY);
+      glTexCoord2f(u + 1f / 16f, v + 1f / 8f);
+      glVertex2f(drawX + 8, drawY + 16);
+      glTexCoord2f(u, v + 1f / 8f);
+      glVertex2f(drawX, drawY + 16);
+
+      drawX += 8; // Move to the next character position
+    }
+    glEnd();
+  }
+
   public void end() {
+    // placeholder for any final rendering steps
   }
 
   public void dispose() {
+    font.dispose();
   }
 }

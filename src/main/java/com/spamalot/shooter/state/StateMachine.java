@@ -15,19 +15,22 @@ public class StateMachine {
   }
 
   public void change(GameState s) {
-    if (!stack.isEmpty())
+    if (!stack.isEmpty()) {
       pop();
+    }
     push(s);
   }
 
   public void update(double dt) {
-    if (!stack.isEmpty())
+    if (!stack.isEmpty()) {
       stack.peek().update(dt);
+    }
   }
 
   public void render() {
-    if (!stack.isEmpty())
+    if (!stack.isEmpty()) {
       stack.peek().render();
+    }
   }
 
   public void dispose() {

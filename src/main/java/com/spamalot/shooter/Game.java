@@ -21,7 +21,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 import com.spamalot.shooter.input.Gamepad;
-import com.spamalot.shooter.render.GLUtils;
+import com.spamalot.shooter.render.OpenGlInitializer;
 import com.spamalot.shooter.state.MenuState;
 import com.spamalot.shooter.state.StateMachine;
 
@@ -98,7 +98,7 @@ public class Game {
     }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    GLUtils.create();
+    OpenGlInitializer.create();
     glClearColor(0f, 0f, 0f, 1f);
 
     // Set key callback to close window on ESC key press

@@ -12,6 +12,7 @@ public class Player {
   private static final float HEIGHT = 48;
 
   public void move(Vec2f axis, double dt) {
+    System.out.println(axis);
     Vec2f v = axis.norm().mul(speed * (float) dt);
     pos = pos.add(v);
   }

@@ -1,15 +1,31 @@
 package com.spamalot.shooter.render;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_RGBA8;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBImage;
 
 public class Texture {
   private final int id;
-  private final int width, height;
+  private final int width;
+  private final int height;
 
   public static Texture load(String path) {
     IntBuffer w = BufferUtils.createIntBuffer(1);
@@ -17,8 +33,9 @@ public class Texture {
     IntBuffer comp = BufferUtils.createIntBuffer(1);
     STBImage.stbi_set_flip_vertically_on_load(true);
     ByteBuffer img = STBImage.stbi_load(path, w, h, comp, 4);
-    if (img == null)
+    if (img == null) {
       throw new RuntimeException("Failed to load image: " + path);
+    }
 
     int tex = glGenTextures();
     glBindTexture(GL_TEXTURE_2D, tex);
