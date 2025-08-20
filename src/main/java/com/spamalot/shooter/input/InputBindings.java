@@ -8,9 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Stores mappings from game actions to physical inputs.
+ *
+ * <p>Bindings are loaded from and saved to JSON using {@link JsonFiles}. The
+ * {@link Gamepad} class queries this map to resolve actions into button or axis
+ * indices.</p>
+ */
 public class InputBindings {
   private final Map<String, Binding> map = new HashMap<>();
 
+  /**
+   * Loads bindings from a JSON file or falls back to defaults.
+   */
   public static InputBindings loadOrDefault(String path) {
     var b = new InputBindings();
     Type t = new TypeToken<List<Binding>>() {
@@ -23,18 +33,24 @@ public class InputBindings {
     return b;
   }
 
+  /** Retrieves the binding associated with the given action. */
   public Binding get(String action) {
     return map.get(action);
   }
 
+  /** Adds or replaces a binding for the specified action. */
   public void put(Binding b) {
     map.put(b.action, b);
   }
 
+  /** Saves the current bindings to disk. */
   public void save(String path) {
     JsonFiles.writeList(path, new ArrayList<>(map.values()));
   }
 
+  /**
+   * Generates a set of default bindings used when no configuration file exists.
+   */
   private static List<Binding> defaultBindings() {
     final List<Binding> list = new ArrayList<>();
 

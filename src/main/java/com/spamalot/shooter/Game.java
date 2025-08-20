@@ -22,6 +22,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 
 import com.spamalot.shooter.input.Gamepad;
 import com.spamalot.shooter.render.OpenGlInitializer;
+import com.spamalot.shooter.state.GameState;
 import com.spamalot.shooter.state.MenuState;
 import com.spamalot.shooter.state.StateMachine;
 
@@ -59,7 +60,11 @@ public class Game {
   }
 
   /**
-   * Starts the game loop and manages the application lifecycle.
+   * Starts the main loop that updates and renders the active {@link GameState}.
+   *
+   * <p>The loop polls GLFW events, updates the state machine, clears the color
+   * buffer with {@link org.lwjgl.opengl.GL11#glClear} and finally swaps the back buffer to the
+   * screen using {@link org.lwjgl.glfw.GLFW#glfwSwapBuffers(long)}.</p>
    */
   public void run() {
     initWindow();
@@ -67,15 +72,16 @@ public class Game {
 
     while (!glfwWindowShouldClose(window)) {
       time.tick();
-      glfwPollEvents();
+      glfwPollEvents(); // Process input events from GLFW
 
       states.update(time.delta());
-      glClear(GL_COLOR_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT); // Clear the screen before rendering
       states.render();
 
-      glfwSwapBuffers(window);
+      glfwSwapBuffers(window); // Present the rendered frame
     }
 
+    // Cleanup when the window is closed
     states.dispose();
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -83,23 +89,24 @@ public class Game {
 
   /**
    * Initializes the GLFW window and OpenGL context.
-   * 
-   * <p>Sets window hints, creates the window, sets up key callbacks, and
-   * initializes gamepad input.</p>
+   *
+   * <p>Sets window hints, creates the window, establishes the OpenGL context and
+   * registers input callbacks. LWJGL functions are thin wrappers around the
+   * underlying GLFW and OpenGL APIs.</p>
    */
   private void initWindow() {
     if (!glfwInit()) {
       throw new IllegalStateException("GLFW init failed");
     }
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    window = glfwCreateWindow(width, height, title, 0, 0);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // fixed-size window
+    window = glfwCreateWindow(width, height, title, 0, 0); // create the window
     if (window == 0) {
       throw new IllegalStateException("Window creation failed");
     }
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    glfwMakeContextCurrent(window); // bind OpenGL context to current thread
+    glfwSwapInterval(1); // enable v-sync
     OpenGlInitializer.create();
-    glClearColor(0f, 0f, 0f, 1f);
+    glClearColor(0f, 0f, 0f, 1f); // set clear color to black
 
     // Set key callback to close window on ESC key press
     glfwSetKeyCallback(window, (win, key, sc, action, mods) -> {
@@ -108,7 +115,7 @@ public class Game {
       }
     });
 
-    Gamepad.init();
+    Gamepad.init(); // set up gamepad mappings
   }
 
   /**
