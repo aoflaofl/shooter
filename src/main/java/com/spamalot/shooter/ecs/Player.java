@@ -32,4 +32,13 @@ public class Player {
   public void draw(Renderer2D r) {
     r.sprite(tex, pos.x() - WIDTH / 2, pos.y() - HEIGHT / 2, WIDTH, HEIGHT);
   }
+
+  /**
+   * Current center position of the player.
+   *
+   * @return player position
+   */
+  public Vec2f pos() {
+    return pos;
+  }
 }
