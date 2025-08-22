@@ -91,6 +91,7 @@ public final class Gamepad {
     if (b == null || b.type != InputType.BUTTON) {
       return false;
     }
+    System.out.println("Action: " + b.action + " - Button: " + b.button);
     return PREV.buttons(b.button) == GLFW_RELEASE && STATE.buttons(b.button) == GLFW_PRESS;
   }
 
