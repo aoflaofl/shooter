@@ -62,7 +62,8 @@ public class GameplayState implements GameState {
         (cam.y() % WORLD_HEIGHT + WORLD_HEIGHT) % WORLD_HEIGHT);
 
     if (Gamepad.actionJustPressed("FIRE")) {
-      bullets.add(new Bullet(player.pos(), new Vec2f(0, -700)));
+      Vec2f dir = player.facing();
+      bullets.add(new Bullet(player.pos(), dir.mul(700)));
       if (!shootSound.isPlaying()) {
         shootSound.play();
       }

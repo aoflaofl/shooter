@@ -10,8 +10,22 @@ import com.spamalot.shooter.render.Texture;
 public class Player {
   /** Player position within the world. */
   private Vec2f pos = new Vec2f(640, 360);
-  private float speed = 350f;
-  private final Texture tex = Texture.load("assets/textures/player.png");
+  private final float speed = 350f;
+  /** Current velocity of the player. */
+  private Vec2f vel = Vec2f.ZERO;
+  /** Last non-zero facing direction. */
+  private Vec2f facing = new Vec2f(0, -1);
+  /** Pre-rendered textures for 8 facing directions. */
+  private final Texture[] texDirs = {
+      Texture.load("assets/textures/player_up.png"),
+      Texture.load("assets/textures/player_up_right.png"),
+      Texture.load("assets/textures/player_right.png"),
+      Texture.load("assets/textures/player_down_right.png"),
+      Texture.load("assets/textures/player_down.png"),
+      Texture.load("assets/textures/player_down_left.png"),
+      Texture.load("assets/textures/player_left.png"),
+      Texture.load("assets/textures/player_up_left.png")
+  };
   private static final float WIDTH = 48;
   private static final float HEIGHT = 48;
 
@@ -22,9 +36,11 @@ public class Player {
    * @param dt   delta time in seconds
    */
   public void move(Vec2f axis, double dt) {
-    System.out.println(axis);
-    Vec2f v = axis.norm().mul(speed * (float) dt);
-    pos = pos.add(v);
+    vel = axis.norm().mul(speed);
+    if (vel.len() > 0) {
+      facing = vel.norm();
+    }
+    pos = pos.add(vel.mul((float) dt));
   }
 
   /**
@@ -45,7 +61,17 @@ public class Player {
    * Draws the player's sprite using the provided renderer.
    */
   public void draw(Renderer2D r, float x, float y) {
-    r.sprite(tex, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+    int idx = dirIndex(facing);
+    r.sprite(texDirs[idx], x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+  }
+
+  private int dirIndex(Vec2f d) {
+    double angle = Math.atan2(d.y(), d.x()) + Math.PI / 2.0;
+    if (angle < 0) {
+      angle += Math.PI * 2.0;
+    }
+    double sector = Math.PI / 4.0; // 8 directions
+    return (int) Math.round(angle / sector) % 8;
   }
 
   /**
@@ -55,5 +81,10 @@ public class Player {
    */
   public Vec2f pos() {
     return pos;
+  }
+
+  /** Current facing direction as a unit vector. */
+  public Vec2f facing() {
+    return facing;
   }
 }
