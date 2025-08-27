@@ -25,6 +25,17 @@ public class GameplayState implements GameState {
   private final List<Bullet> bullets = new ArrayList<>();
   private static final int WIDTH = 1280;
   private static final int HEIGHT = 720;
+  private static final int WORLD_WIDTH = WIDTH * 4;
+  private static final int WORLD_HEIGHT = HEIGHT * 4;
+  private Vec2f cam = Vec2f.ZERO;
+
+  private static final int TILE_SIZE = 128;
+  private static final Vec2f[] STAR_TILE = {
+      new Vec2f(10, 10),
+      new Vec2f(40, 80),
+      new Vec2f(90, 20),
+      new Vec2f(120, 100)
+  };
 
   /**
    * Constructs the gameplay state. Parameters are currently unused but mirror
@@ -45,6 +56,11 @@ public class GameplayState implements GameState {
     Gamepad.poll();
     var move = Gamepad.axis("MOVE");
     player.move(move, dt);
+    player.wrap(WORLD_WIDTH, WORLD_HEIGHT);
+    cam = new Vec2f(player.pos().x() - WIDTH / 2f, player.pos().y() - HEIGHT / 2f);
+    cam = new Vec2f((cam.x() % WORLD_WIDTH + WORLD_WIDTH) % WORLD_WIDTH,
+        (cam.y() % WORLD_HEIGHT + WORLD_HEIGHT) % WORLD_HEIGHT);
+
     if (Gamepad.actionJustPressed("FIRE")) {
       bullets.add(new Bullet(player.pos(), new Vec2f(0, -700)));
       if (!shootSound.isPlaying()) {
@@ -56,8 +72,9 @@ public class GameplayState implements GameState {
     while (it.hasNext()) {
       Bullet b = it.next();
       b.update(dt);
-      Vec2f p = b.pos();
-      if (p.x() < 0 || p.x() > WIDTH || p.y() < 0 || p.y() > HEIGHT) {
+      float bx = worldToScreenX(b.pos().x());
+      float by = worldToScreenY(b.pos().y());
+      if (bx < 0 || bx > WIDTH || by < 0 || by > HEIGHT) {
         it.remove();
       }
     }
@@ -69,9 +86,12 @@ public class GameplayState implements GameState {
   @Override
   public void render() {
     renderer.begin();
-    player.draw(renderer);
+    renderBackground();
+    player.draw(renderer, WIDTH / 2f, HEIGHT / 2f);
     for (Bullet b : bullets) {
-      b.draw(renderer);
+      float bx = worldToScreenX(b.pos().x());
+      float by = worldToScreenY(b.pos().y());
+      b.draw(renderer, bx, by);
     }
     renderer.end();
   }
@@ -83,5 +103,41 @@ public class GameplayState implements GameState {
   public void dispose() {
     renderer.dispose();
     shootSound.dispose();
+  }
+
+  private float worldToScreenX(float worldX) {
+    float x = worldX - cam.x();
+    if (x < 0) {
+      x += WORLD_WIDTH;
+    } else if (x >= WORLD_WIDTH) {
+      x -= WORLD_WIDTH;
+    }
+    return x;
+  }
+
+  private float worldToScreenY(float worldY) {
+    float y = worldY - cam.y();
+    if (y < 0) {
+      y += WORLD_HEIGHT;
+    } else if (y >= WORLD_HEIGHT) {
+      y -= WORLD_HEIGHT;
+    }
+    return y;
+  }
+
+  private void renderBackground() {
+    float offsetX = cam.x() % TILE_SIZE;
+    float offsetY = cam.y() % TILE_SIZE;
+    int tilesX = WIDTH / TILE_SIZE + 2;
+    int tilesY = HEIGHT / TILE_SIZE + 2;
+    for (int y = 0; y < tilesY; y++) {
+      for (int x = 0; x < tilesX; x++) {
+        float baseX = x * TILE_SIZE - offsetX;
+        float baseY = y * TILE_SIZE - offsetY;
+        for (Vec2f star : STAR_TILE) {
+          renderer.rect(baseX + star.x(), baseY + star.y(), 2, 2);
+        }
+      }
+    }
   }
 }

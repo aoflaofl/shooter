@@ -30,9 +30,15 @@ public class Bullet {
     pos = pos.add(vel.mul((float) dt));
   }
 
-  /** Draw the bullet. */
-  public void draw(Renderer2D r) {
-    r.sprite(TEX, pos.x() - WIDTH / 2, pos.y() - HEIGHT / 2, WIDTH, HEIGHT);
+  /**
+   * Draw the bullet at the specified screen coordinates.
+   *
+   * @param r renderer used for drawing
+   * @param x screen x coordinate of the bullet center
+   * @param y screen y coordinate of the bullet center
+   */
+  public void draw(Renderer2D r, float x, float y) {
+    r.sprite(TEX, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
   }
 
   /** Current position of the bullet. */

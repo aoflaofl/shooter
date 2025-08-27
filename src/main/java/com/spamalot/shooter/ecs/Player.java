@@ -8,6 +8,7 @@ import com.spamalot.shooter.render.Texture;
  * Simple player entity used in the gameplay state.
  */
 public class Player {
+  /** Player position within the world. */
   private Vec2f pos = new Vec2f(640, 360);
   private float speed = 350f;
   private final Texture tex = Texture.load("assets/textures/player.png");
@@ -27,10 +28,24 @@ public class Player {
   }
 
   /**
+   * Wrap the player's position around the world edges.
+   *
+   * @param worldWidth  width of the world
+   * @param worldHeight height of the world
+   */
+  public void wrap(float worldWidth, float worldHeight) {
+    float x = pos.x();
+    float y = pos.y();
+    x = (x % worldWidth + worldWidth) % worldWidth;
+    y = (y % worldHeight + worldHeight) % worldHeight;
+    pos = new Vec2f(x, y);
+  }
+
+  /**
    * Draws the player's sprite using the provided renderer.
    */
-  public void draw(Renderer2D r) {
-    r.sprite(tex, pos.x() - WIDTH / 2, pos.y() - HEIGHT / 2, WIDTH, HEIGHT);
+  public void draw(Renderer2D r, float x, float y) {
+    r.sprite(tex, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
   }
 
   /**
